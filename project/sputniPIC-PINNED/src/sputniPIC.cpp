@@ -50,9 +50,9 @@ int main(int argc, char **argv){
     
     // Allocate Fields
     EMfield field;
-    field_allocate(&grd,&field);
+    field_allocate(&field,&field);
     EMfield_aux field_aux;
-    field_aux_allocate(&grd,&field_aux);
+    field_aux_allocate(&field_aux,&field_aux);
     
     
     // Allocate Interpolated Quantities
