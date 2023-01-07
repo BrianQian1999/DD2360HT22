@@ -145,6 +145,7 @@ int main(int argc, char **argv){
     cudaFree(field);
     // field_deallocate(&grd,&field);  //done
     // interp
+    cudaFree(field_aux);
     cudaFree(idn);
     //interp_dens_net_deallocate(&grd,&idn); //done
     

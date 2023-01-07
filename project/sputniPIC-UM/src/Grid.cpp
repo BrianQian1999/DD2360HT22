@@ -1,4 +1,4 @@
-#include <iostream>
++#include <iostream>
 #include "Grid.h"
 #include "Alloc.h"
 #include <cuda.h>
