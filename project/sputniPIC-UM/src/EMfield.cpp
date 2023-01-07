@@ -1,8 +1,12 @@
 #include "EMfield.h"
+#include "Alloc.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 /** allocate electric and magnetic field */
 void field_allocate(struct grid* grd, struct EMfield* field)
 {
+    cudaMallocManaged((void**)&field, sizeof(EMfield), cudaHostAllocDefault);
     // E on nodes
     field->Ex  = newArr3<FPfield>(&field->Ex_flat, grd->nxn, grd->nyn, grd->nzn);
     field->Ey  = newArr3<FPfield>(&field->Ey_flat, grd->nxn, grd->nyn, grd->nzn);
@@ -16,6 +20,8 @@ void field_allocate(struct grid* grd, struct EMfield* field)
 /** deallocate electric and magnetic field */
 void field_deallocate(struct grid* grd, struct EMfield* field)
 {
+    cudaFree(field);
+    /*
     // E deallocate 3D arrays
     delArr3(field->Ex, grd->nxn, grd->nyn);
     delArr3(field->Ey, grd->nxn, grd->nyn);
@@ -25,4 +31,6 @@ void field_deallocate(struct grid* grd, struct EMfield* field)
     delArr3(field->Bxn, grd->nxn, grd->nyn);
     delArr3(field->Byn, grd->nxn, grd->nyn);
     delArr3(field->Bzn, grd->nxn, grd->nyn);
+    
+    */
 }

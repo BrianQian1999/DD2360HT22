@@ -252,9 +252,13 @@ int mover_PC_gpu (struct particles* part, struct EMfield* field, struct grid* gr
     //parameters* param;
 
     //cudaMalloc(&part, sizeof(particles));
-    cudaMallocManaged(&field, sizeof(EMfield));
-    cudaMallocManaged(&grd, sizeof(grid));
+    //cudaMallocManaged(&field, sizeof(EMfield));
+    //cudaMallocManaged(&grd, sizeof(grid));
     //cudaMalloc(&param, sizeof(parameters));
+    
+    
+    //cudaMallocManaged((void**)&field, sizeof(EMfield), cudaHostAllocDefault);
+    //cudaMallocManaged((void**)&grd, sizeof(grid), cudaHostAllocDefault);
 
     ////cudaMemcpy(part, part, sizeof(particles),cudaMemcpyHostToDevice);
     ////cudaMemcpy(field, field, sizeof(EMfield),cudaMemcpyHostToDevice);
@@ -275,8 +279,8 @@ int mover_PC_gpu (struct particles* part, struct EMfield* field, struct grid* gr
     //cudaMemcpy(param, param, sizeof(parameters), cudaMemcpyDeviceToHost);
 
     //cudaFree(part);
-    cudaFree(field);
-    cudaFree(grd);
+    //cudaFree(field);
+    //cudaFree(grd);
     //cudaFree(param);
 
     return 0;

@@ -1,8 +1,12 @@
 #include "InterpDensSpecies.h"
+#include "Alloc.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 /** allocated interpolated densities per species */
 void interp_dens_species_allocate(struct grid* grd, struct interpDensSpecies* ids, int is)
 {
+    cudaMallocManaged((void**)&ids, sizeof(interpDensSpecies), cudaHostAllocDefault);
     // set species ID
     ids->species_ID = is;
     
@@ -34,7 +38,7 @@ void interp_dens_species_allocate(struct grid* grd, struct interpDensSpecies* id
 /** deallocate interpolated densities per species */
 void interp_dens_species_deallocate(struct grid* grd, struct interpDensSpecies* ids)
 {
-    
+    cudaFree(ids);
     // deallocate 3D arrays
     delArr3(ids->rhon, grd->nxn, grd->nyn);
     delArr3(ids->rhoc, grd->nxc, grd->nyc);

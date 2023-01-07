@@ -2,6 +2,8 @@
 
 // Allocator for 2D, 3D and 4D array: chain of pointers
 #include "Alloc.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 // Precision: fix precision for different quantities
 #include "PrecisionTypes.h"
@@ -46,6 +48,7 @@ int main(int argc, char **argv){
     
     // Set-up the grid information
     grid grd;
+
     setGrid(&param, &grd);
     
     // Allocate Fields
@@ -62,7 +65,7 @@ int main(int argc, char **argv){
         interp_dens_species_allocate(&grd,&ids[is],is);
     // Net densities
     interpDensNet idn;
-    interp_dens_net_allocate(&grd,&idn);
+    interp_dens_net_allocate(&grd,&idn);//done
     
     // Allocate Particles
     particles *part = new particles[param.ns];
@@ -129,15 +132,15 @@ int main(int argc, char **argv){
     
     /// Release the resources
     // deallocate field
-    grid_deallocate(&grd);
-    field_deallocate(&grd,&field);
+    grid_deallocate(&grd);  //done
+    field_deallocate(&grd,&field);  //done
     // interp
-    interp_dens_net_deallocate(&grd,&idn);
+    interp_dens_net_deallocate(&grd,&idn); //done
     
     // Deallocate interpolated densities and particles
     for (int is=0; is < param.ns; is++){
-        interp_dens_species_deallocate(&grd,&ids[is]);
-        particle_deallocate(&part[is]);
+        interp_dens_species_deallocate(&grd,&ids[is]); //done
+        particle_deallocate(&part[is]); //done
     }
     
     
