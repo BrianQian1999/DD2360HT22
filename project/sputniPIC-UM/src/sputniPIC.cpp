@@ -53,12 +53,12 @@ int main(int argc, char **argv){
     
     // Allocate Fields
     EMfield * field;
-    cudaMallocManaged((void**)&grd, sizeof(EMfield));
-    // field_allocate(grd, field);
+    cudaMallocManaged((void**)&field, sizeof(EMfield));
+    field_allocate(grd, field);
 
     EMfield_aux * field_aux;
-    cudaMallocManaged((void**)&grd, sizeof(EMfield_aux));
-    // field_aux_allocate(grd, field_aux);
+    cudaMallocManaged((void**)&field_aux, sizeof(EMfield_aux));
+    field_aux_allocate(grd, field_aux);
     
     
     // Allocate Interpolated Quantities
@@ -66,13 +66,13 @@ int main(int argc, char **argv){
     interpDensSpecies * ids = new interpDensSpecies[param.ns];
     cudaMallocManaged((void**)(&ids), sizeof(interpDensSpecies) * param.ns);
     for (int is=0; is < param.ns; is++) {        
-        ids[is].species_ID = is;
+        interp_dens_species_allocate(grd, ids+is, is);
     }
     
     // Net densities
     interpDensNet * idn;
     cudaMallocManaged((void**)&idn, sizeof(interpDensNet));
-    // interp_dens_net_allocate(grd, idn);//done
+    interp_dens_net_allocate(grd, idn);//done
     
     // Allocate Particles
     particles *part = new particles[param.ns];
