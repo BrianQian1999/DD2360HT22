@@ -47,35 +47,43 @@ int main(int argc, char **argv){
     double iMover, iInterp, eMover = 0.0, eInterp= 0.0;
     
     // Set-up the grid information
-    grid grd;
-
-    setGrid(&param, &grd);
+    grid * grd;
+    cudaMallocManaged((void**)&grd, sizeof(grid)); 
+    setGrid(&param, grd);
     
     // Allocate Fields
-    EMfield field;
-    field_allocate(&grd,&field);
-    EMfield_aux field_aux;
-    field_aux_allocate(&grd,&field_aux);
+    EMfield * field;
+    cudaMallocManaged((void**)&grd, sizeof(EMfield));
+    // field_allocate(grd, field);
+
+    EMfield_aux * field_aux;
+    cudaMallocManaged((void**)&grd, sizeof(EMfield_aux));
+    // field_aux_allocate(grd, field_aux);
     
     
     // Allocate Interpolated Quantities
     // per species
-    interpDensSpecies *ids = new interpDensSpecies[param.ns];
-    for (int is=0; is < param.ns; is++)
-        interp_dens_species_allocate(&grd,&ids[is],is);
+    interpDensSpecies * ids = new interpDensSpecies[param.ns];
+    cudaMallocManaged((void**)(&ids), sizeof(interpDensSpecies) * param.ns);
+    for (int is=0; is < param.ns; is++) {        
+        ids[is].species_ID = is;
+    }
+    
     // Net densities
-    interpDensNet idn;
-    interp_dens_net_allocate(&grd,&idn);//done
+    interpDensNet * idn;
+    cudaMallocManaged((void**)&idn, sizeof(interpDensNet));
+    // interp_dens_net_allocate(grd, idn);//done
     
     // Allocate Particles
     particles *part = new particles[param.ns];
+    cudaMallocManaged((void**)&(part), sizeof(particles) * param.ns);
     // allocation
     for (int is=0; is < param.ns; is++){
-        particle_allocate(&param,&part[is],is);
+        particle_allocate(&param, part+is, is);
     }
     
     // Initialization
-    initGEM(&param,&grd,&field,&field_aux,part,ids);
+    initGEM(&param, grd, field, field_aux,part,ids);
     
     
     // **********************************************************//
@@ -89,7 +97,7 @@ int main(int argc, char **argv){
         std::cout << "***********************" << std::endl;
     
         // set to zero the densities - needed for interpolation
-        setZeroDensities(&idn,ids,&grd,param.ns);
+        setZeroDensities(idn,ids,grd,param.ns);
         
         
         
@@ -97,7 +105,7 @@ int main(int argc, char **argv){
         iMover = cpuSecond(); // start timer for mover
         for (int is=0; is < param.ns; is++)
             //mover_PC(&part[is],&field,&grd,&param);
-            mover_PC_gpu(&part[is],&field,&grd,&param);
+            mover_PC_gpu(&part[is],field,grd,&param);
         eMover += (cpuSecond() - iMover); // stop timer for mover
         
         
@@ -107,21 +115,21 @@ int main(int argc, char **argv){
         iInterp = cpuSecond(); // start timer for the interpolation step
         // interpolate species
         for (int is=0; is < param.ns; is++)
-            interpP2G(&part[is],&ids[is],&grd);
+            interpP2G(&part[is],&ids[is],grd);
         // apply BC to interpolated densities
         for (int is=0; is < param.ns; is++)
-            applyBCids(&ids[is],&grd,&param);
+            applyBCids(&ids[is],grd,&param);
         // sum over species
-        sumOverSpecies(&idn,ids,&grd,param.ns);
+        sumOverSpecies(idn,ids,grd,param.ns);
         // interpolate charge density from center to node
-        applyBCscalarDensN(idn.rhon,&grd,&param);
+        applyBCscalarDensN(idn->rhon,grd,&param);
         
         
         
         // write E, B, rho to disk
         if (cycle%param.FieldOutputCycle==0){
-            VTK_Write_Vectors(cycle, &grd,&field);
-            VTK_Write_Scalars(cycle, &grd,ids,&idn);
+            VTK_Write_Vectors(cycle, grd, field);
+            VTK_Write_Scalars(cycle, grd,ids,idn);
         }
         
         eInterp += (cpuSecond() - iInterp); // stop timer for interpolation
@@ -132,16 +140,21 @@ int main(int argc, char **argv){
     
     /// Release the resources
     // deallocate field
-    grid_deallocate(&grd);  //done
-    field_deallocate(&grd,&field);  //done
+    // grid_deallocate(&grd);  //done
+    cudaFree(grd);
+    cudaFree(field);
+    // field_deallocate(&grd,&field);  //done
     // interp
-    interp_dens_net_deallocate(&grd,&idn); //done
+    cudaFree(idn);
+    //interp_dens_net_deallocate(&grd,&idn); //done
     
     // Deallocate interpolated densities and particles
-    for (int is=0; is < param.ns; is++){
-        interp_dens_species_deallocate(&grd,&ids[is]); //done
-        particle_deallocate(&part[is]); //done
-    }
+    cudaFree(part);
+    cudaFree(ids);
+    // for (int is=0; is < param.ns; is++){
+    //    interp_dens_species_deallocate(grd,&ids[is]); //done
+        // particle_deallocate(&part[is]); //done
+    // }
     
     
     // stop timer

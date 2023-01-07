@@ -6,7 +6,6 @@
 /** allocated interpolated densities per species */
 void interp_dens_species_allocate(struct grid* grd, struct interpDensSpecies* ids, int is)
 {
-    cudaMallocManaged((void**)&ids, sizeof(interpDensSpecies), cudaHostAllocDefault);
     // set species ID
     ids->species_ID = is;
     

@@ -8,8 +8,6 @@
 void setGrid(struct parameters* param, struct grid* grd)
 {
     
-    cudaMallocManaged((void**)&grd, sizeof(grd), cudaHostAllocDefault);
-    ///////////////////////////////
     // add 2 for the guard cells
     // useful for BC and potential domain decomposition
     grd->nxc = param->nxc + 2;

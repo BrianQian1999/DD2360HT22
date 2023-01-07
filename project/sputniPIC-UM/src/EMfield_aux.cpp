@@ -7,7 +7,6 @@
 void field_aux_allocate(struct grid* grd, struct EMfield_aux* field_aux)
 {
     
-    cudaMallocManaged((void**)&field_aux, sizeof(EMfield_aux), cudaHostAllocDefault);
     // Electrostatic potential
     field_aux->Phi = newArr3<FPfield>(&field_aux->Phi_flat, grd->nxc, grd->nyc, grd->nzc);
     
@@ -26,7 +25,6 @@ void field_aux_allocate(struct grid* grd, struct EMfield_aux* field_aux)
 void field_aux_deallocate(struct grid* grd, struct EMfield_aux* field_aux)
 {
     
-    cudaFree(field_aux);
     // Eth
     delArr3(field_aux->Exth, grd->nxn, grd->nyn);
     delArr3(field_aux->Eyth, grd->nxn, grd->nyn);

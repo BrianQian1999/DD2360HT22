@@ -9,9 +9,6 @@
 void particle_allocate(struct parameters* param, struct particles* part, int is)
 {
         
-    cudaMallocManaged((void**)&part, sizeof(particles), cudaHostAllocDefault);
-    //cudaMallocManaged((void**)&param, sizeof(parameters), cudaHostAllocDefault);
-
     // set species ID
     part->species_ID = is;
     // number of particles
@@ -69,16 +66,14 @@ void particle_allocate(struct parameters* param, struct particles* part, int is)
 /** deallocate */
 void particle_deallocate(struct particles* part)
 {
-    cudaFree(part);
 
-    // deallocate particle variables
-//   delete[] part->x;
-//   delete[] part->y;
-//   delete[] part->z;
-//   delete[] part->u;
-//   delete[] part->v;
-//   delete[] part->w;
-//   delete[] part->q;
+    delete[] part->x;
+    delete[] part->y;
+    delete[] part->z;
+    delete[] part->u;
+    delete[] part->v;
+    delete[] part->w;
+    delete[] part->q;
 }
 
 /** particle mover */
