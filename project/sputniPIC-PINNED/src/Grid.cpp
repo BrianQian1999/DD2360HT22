@@ -1,11 +1,13 @@
 #include <iostream>
 #include "Grid.h"
+#include "Alloc.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 /** Set up the grid quantities */
 void setGrid(struct parameters* param, struct grid* grd)
 {
     
-    ///////////////////////////////
     // add 2 for the guard cells
     // useful for BC and potential domain decomposition
     grd->nxc = param->nxc + 2;
@@ -78,10 +80,13 @@ void printGrid(struct grid* grd)
 /** allocate electric and magnetic field */
 void grid_deallocate(struct grid* grd)
 {
+    cudaFree(grd);
     
+    /*
     delArr3(grd->XN, grd->nxn, grd->nyn);
     delArr3(grd->YN, grd->nxn, grd->nyn);
     delArr3(grd->ZN, grd->nxn, grd->nyn);
+    */
 }
 
 

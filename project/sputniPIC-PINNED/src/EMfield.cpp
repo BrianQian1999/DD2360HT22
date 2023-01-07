@@ -1,4 +1,7 @@
 #include "EMfield.h"
+#include "Alloc.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 /** allocate electric and magnetic field */
 void field_allocate(struct grid* grd, struct EMfield* field)
@@ -25,4 +28,5 @@ void field_deallocate(struct grid* grd, struct EMfield* field)
     delArr3(field->Bxn, grd->nxn, grd->nyn);
     delArr3(field->Byn, grd->nxn, grd->nyn);
     delArr3(field->Bzn, grd->nxn, grd->nyn);
+    
 }

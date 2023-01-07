@@ -1,6 +1,9 @@
 /** Interpolated densities - Net = sum all of species contributions */
 
 #include "InterpDensNet.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include "Alloc.h"
 
 /** allocated interpolated densities per species */
 void interp_dens_net_allocate(struct grid* grd, struct interpDensNet* idn)
